@@ -27,6 +27,9 @@ class MetaBall:
     def setFx(self, amount):
         self.fx = amount
 
+    def setFy(self, amount):
+        self.fy = amount
+
     def move(self, timestep):
         ax = self.fx / self.mass
         vx = ax * timestep
@@ -97,7 +100,7 @@ class Game:
             print(event.type, event.char)
 
         if event.char in self.bindings:
-            response = self.bindings[event.char][str(event.type)]
+            response = self.bindings[event.char.lower()][str(event.type)]
             response()
 
     def detectCollisions(self):
@@ -173,11 +176,19 @@ if __name__ == "__main__":
 
     myBindings = {
         "w": {
-            "KeyPress": lambda: ball.setFx(5),
-            "KeyRelease": lambda: ball.setFx(0),
+            "KeyPress": lambda: ball.setFy(-5),
+            "KeyRelease": lambda: ball.setFy(0),
         },
         "s": {
+            "KeyPress": lambda: ball.setFy(5),
+            "KeyRelease": lambda: ball.setFy(0)
+        },
+        "a": {
             "KeyPress": lambda: ball.setFx(-5),
+            "KeyRelease": lambda: ball.setFx(0)
+        },
+        "d": {
+            "KeyPress": lambda: ball.setFx(5),
             "KeyRelease": lambda: ball.setFx(0)
         },
         "e": lambda: print("* bindings active")
