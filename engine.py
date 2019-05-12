@@ -3,32 +3,46 @@ import threading
 import time
 
 
-class MetaBall:
-    def __init__(self, canvas, mass, radius, color, x, y, vx, vy):
-        # Static info (hopefully...)
+class Circle:
+    def __init__(self, canvas, mass, radius, color,
+                 x, y, rotation, vx, vy, angularVelocity):
         self.canvas = canvas
+        self.color = color
         self.id = None
 
+        # Kilograms
         self.mass = mass
+
+        # Meters
         self.radius = radius
-
-        self.color = color
-
-        # These should change
         self.x = x
         self.y = y
+
+        # Radians
+        self.rotation = rotation
+
+        # Meters/second
         self.vx = vx
         self.vy = vy
 
-        # These are used to determine the change
+        # Radians/second
+        self.angularVelocity = angularVelocity
+
+        # Newtons
         self.fx = 0
         self.fy = 0
+
+        # Newton meters
+        self.torque = 0
 
     def setFx(self, amount):
         self.fx = amount
 
     def setFy(self, amount):
         self.fy = amount
+
+    def setTorque(self, amount):
+        self.torque = amount
 
     def move(self, timestep):
         ax = self.fx / self.mass
@@ -44,6 +58,13 @@ class MetaBall:
 
         self.vx += vx
         self.vy += vy
+
+    def rotate(self, timestep):
+        # a = torque / momentOfInertia
+        a = self.torque / self.mass - self.radius ** 2
+        
+        # torque = mr^2
+        pass
 
     def erase(self):
         self.canvas.delete(self.id)
@@ -172,29 +193,29 @@ if __name__ == "__main__":
     canvas = tk.Canvas(root, bg="black")
     canvas.pack(fill="both", expand=True)
     # canvas, mass, radius, color, x, y, vx, vy
-    ball = MetaBall(canvas, 1, 15, "blue", 50, 50, 0, 0)
+    circle = Circle(canvas, 1, 15, "blue", 50, 50, 0, 0, 0, 0)
 
     myBindings = {
         "w": {
-            "KeyPress": lambda: ball.setFy(-5),
-            "KeyRelease": lambda: ball.setFy(0),
+            "KeyPress": lambda: circle.setFy(-5),
+            "KeyRelease": lambda: circle.setFy(0),
         },
         "s": {
-            "KeyPress": lambda: ball.setFy(5),
-            "KeyRelease": lambda: ball.setFy(0)
+            "KeyPress": lambda: circle.setFy(5),
+            "KeyRelease": lambda: circle.setFy(0)
         },
         "a": {
-            "KeyPress": lambda: ball.setFx(-5),
-            "KeyRelease": lambda: ball.setFx(0)
+            "KeyPress": lambda: circle.setFx(-5),
+            "KeyRelease": lambda: circle.setFx(0)
         },
         "d": {
-            "KeyPress": lambda: ball.setFx(5),
-            "KeyRelease": lambda: ball.setFx(0)
+            "KeyPress": lambda: circle.setFx(5),
+            "KeyRelease": lambda: circle.setFx(0)
         },
         "e": lambda: print("* bindings active")
     }
 
-    game = Game(canvas, [ball], myBindings)
+    game = Game(canvas, [circle], myBindings)
     root.bind("<Key>", game.eventHandler)
     root.bind("<KeyRelease>", game.eventHandler)
     game.run()
